@@ -1,4 +1,4 @@
-"""Sprint Review & Demo Operacional - FinBank (DMS Consulting) - Corte 2, Producto C."""
+"""Sprint Review & Demo Operacional - FinBank (DMS Consulting) - Cortes 2 y 3."""
 import sys
 from pathlib import Path
 
@@ -15,12 +15,13 @@ DATA = ROOT / "data" / "sample_clientes.csv"
 
 # ---------- Datos del reporte de sprints ----------
 SPRINTS = pd.DataFrame(
-    {"Sprint": ["Sprint 1", "Sprint 2"], "Comprometidos": [11, 16], "Completados": [8, 11]}
+    {"Sprint": ["Sprint 1", "Sprint 2", "Sprint 3"], "Comprometidos": [11, 16, 10], "Completados": [8, 11, 10]}
 )
 # Burndown: puntos restantes por día hábil (según días de cierre del reporte)
 BURNDOWN = {
     "Sprint 1": {"total": 11, "cierres": {6: 3, 8: 5}},
     "Sprint 2": {"total": 16, "cierres": {6: 3, 7: 5, 9: 3}},
+    "Sprint 3": {"total": 10, "cierres": {4: 3, 5: 2, 6: 2, 9: 3}},
 }
 
 
@@ -44,7 +45,7 @@ def validar(df: pd.DataFrame):
 
 # ---------- Navegación ----------
 st.sidebar.title("🏦 FinBank · DMS Consulting")
-st.sidebar.caption("GMAC · Corte 2 · Producto C")
+st.sidebar.caption("GMAC · Cortes 2 y 3")
 pagina = st.sidebar.radio(
     "Sección",
     ["1. Resumen del Sprint Review", "2. Demo: pipeline de validación",
@@ -53,17 +54,18 @@ pagina = st.sidebar.radio(
 
 # ---------- 1. Resumen ----------
 if pagina.startswith("1"):
-    st.title("Sprint Review · Sprints 1 y 2")
+    st.title("Sprint Review · Sprints 1, 2 y 3")
     st.write("Incremento entregado a FinBank: diagnóstico, gobierno y Charter, tablero ágil, "
              "requisitos de datos, arquitectura y pipeline de validación de datos.")
-    c1, c2, c3 = st.columns(3)
+    c1, c2, c3, c4 = st.columns(4)
     c1.metric("Velocity Sprint 1", "8 pts", "de 11 comprometidos")
     c2.metric("Velocity Sprint 2", "11 pts", "de 16 comprometidos")
-    c3.metric("Velocity promedio", "9.5 pts")
+    c3.metric("Velocity Sprint 3", "10 pts", "de 10 comprometidos")
+    c4.metric("Velocity promedio", "9.67 pts")
     st.subheader("Estimado vs. real")
     st.bar_chart(SPRINTS.set_index("Sprint"))
     st.subheader("Burndown")
-    cols = st.columns(2)
+    cols = st.columns(3)
     for col, (nombre, cfg) in zip(cols, BURNDOWN.items()):
         col.caption(nombre)
         col.line_chart(burndown_df(cfg["total"], cfg["cierres"]))
@@ -129,8 +131,12 @@ elif pagina.startswith("3"):
     hist = pd.DataFrame([
         ["US-03 Requisitos de datos", "Diccionario de datos", "PR #6", "—", "✅"],
         ["US-04 Datos de muestra", "Dataset sintético", "PR #5", "—", "✅"],
-        ["US-04 Validadores", "feat → test (red) → fix (green) → refactor",
-         "PR #8 (refactor)", "TDD: 089febe · ccf0bd0 · ceaa33b", "✅"],
+        ["US-04.1 Validadores", "feat → test (red) → fix (green) → refactor",
+         "PR #4 · #7 · #8", "TDD: 089febe · ccf0bd0 · ceaa33b", "✅"],
+        ["US-06.1 Definición de churn", "docs/churn_target_definition.md", "PR #10", "—", "✅"],
+        ["US-04.2 Limpieza", "src/finbank/cleaning.py + reporte de calidad", "PR #11", "9 pruebas (red → green)", "✅"],
+        ["US-05.1 Variables y modelo base", "features.py · baseline.py · run_pipeline.py", "PR #12",
+         "7 pruebas (red → green)", "✅"],
     ], columns=["Historia", "Artefacto", "Pull Request", "Evidencia TDD (commits)", "DoD"])
     st.dataframe(hist, width="stretch", hide_index=True)
     st.caption("Repo: github.com/AndresAvella09/finbank-analytics")
@@ -151,5 +157,6 @@ else:
     c3.subheader("Continue")
     c3.markdown("- Tablero Kanban con checklist de 3 ítems\n- Revisión por pares antes de Done\n"
                 "- Dailies cortas\n- Etiquetas por fase del Charter")
-    st.success("Sprint 3: planear entre 9 y 10 puntos, considerando el trabajo pendiente de "
-               "Data Collection & Cleaning.")
+    st.success("Sprint 3: se comprometieron 10 puntos y se completaron 10 (100 %), con 5 puntos cerrados "
+               "en la primera semana. Sprint 4: 9–10 puntos con US-05.2 y US-06.2, sujetos a la entrega "
+               "del extracto real de FinBank.")
