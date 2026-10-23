@@ -41,3 +41,21 @@ Principio de diseño simple de XP: la solución más simple que cumple el contra
 ## Verificación
 
 La batería de pruebas (8 tests) permanece en verde antes y después del cambio; ver bitacora/pruebas.md.
+
+---
+
+# Caso 2 — Eliminar la lógica de limpieza duplicada en el demo (Sprint 3, PR #11)
+
+## Antes (`99f3e42`, `appgmac.py`)
+
+El demo del Sprint Review tenía su propia función `validar()` de unas 40 líneas, que reimplementaba las reglas del diccionario de datos (formato del ID, edad 18–75, score 300–850, categorías) y la imputación de `saldo_mora_30d`. Esas reglas no tenían pruebas y podían divergir del pipeline real.
+
+## Después (`feature/data-cleaning`)
+
+- Las reglas viven en un único módulo probado, `src/finbank/cleaning.py` (`impute_nulls`, `find_invalid_records`, `clean_dataset`, `build_quality_report`).
+- `appgmac.py` reduce `validar()` a un adaptador de 5 líneas sobre `clean_dataset()`: 9 líneas agregadas y 44 eliminadas.
+- Los límites del score se importan de `finbank.validators` (`SCORE_MIN`, `SCORE_MAX`), así que hay un solo punto de configuración.
+
+## Por qué
+
+Simple Design (sin duplicación) y propiedad colectiva: el demo que ve el cliente y el pipeline que alimenta los modelos aplican exactamente las mismas reglas.

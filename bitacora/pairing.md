@@ -18,4 +18,20 @@ Práctica XP 01 — pairing con roles rotativos de piloto/copiloto.
 - **Desarrollo:** primero se escribieron las pruebas que codifican el contrato (ciclo rojo), luego se corrigió el módulo hasta pasarlas (ciclo verde).
 - **Resultado:** commits co-autorados en la rama `test/validator-tests` (hashes: `089febe` ciclo rojo, `ccf0bd0` ciclo verde).
 
+## Sesión 3 — 20/10/2026 (Sprint 3, día 27 del proyecto)
+
+- **Piloto:** Diego Avella
+- **Copiloto:** Juan Sebastián Fajardo
+- **Objetivo:** pruebas de aceptación y tabla de variables del modelo de morosidad (US-05.1).
+- **Desarrollo:** se escribieron primero las 7 pruebas (rojo) a partir de los criterios de aceptación acordados el día 5; luego se construyó `src/finbank/features.py`. Juanse detectó que `ratio_mora_ingreso` filtra información del objetivo proxy de 30 días, y quedó marcada en `LEAKY_FOR_30D_PROXY`.
+- **Resultado:** commits co-autorados en la rama `feature/delinquency-baseline`.
+
+## Sesión 4 — 22/10/2026 (Sprint 3, día 29 del proyecto)
+
+- **Piloto:** Juan Sebastián Fajardo
+- **Copiloto:** Diego Avella
+- **Objetivo:** modelo base por score con sensibilidad de umbral y pipeline completo `run_pipeline.py`.
+- **Desarrollo:** se rotaron los roles. La sesión se trabajó en la estación de Diego y el commit se registró con `Co-authored-by:` de Juanse.
+- **Resultado:** suite en verde (24 pruebas) y reportes `reports/calidad_datos.md` y `reports/baseline_morosidad.md`.
+
 La práctica se registra mediante commits co-autorados en el repositorio; ver bitacora/prs.md para los PR asociados.

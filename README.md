@@ -1,6 +1,6 @@
 # finbank-analytics
 
-DMS Consulting desarrolla para FinBank S.A. un sistema predictivo de morosidad temprana y churn. Este repositorio corresponde a la historia de usuario US-04 (recolección y limpieza de datos) y contiene el pipeline de validación de datos: validadores de integridad del conjunto de clientes, diccionario de datos, dataset sintético de ejemplo, suite de pruebas y la bitácora de prácticas XP del equipo.
+DMS Consulting desarrolla para FinBank S.A. un sistema predictivo de morosidad temprana y churn. Este repositorio contiene el pipeline de datos y modelado construido en los Sprints 2 y 3: validación de integridad y limpieza del conjunto de clientes (US-04), definición del objetivo de churn (US-06.1), variables y modelo base de morosidad temprana (US-05.1), el demo del Sprint Review, la suite de pruebas y la bitácora de prácticas XP del equipo.
 
 ## Equipo y roles
 
@@ -17,16 +17,27 @@ finbank-analytics/
 ├── README.md
 ├── requirements.txt
 ├── conftest.py
+├── run_pipeline.py              # validación -> limpieza -> variables -> modelo base
+├── appgmac.py                   # demo del Sprint Review (Streamlit)
 ├── data/
-│   └── sample_clientes.csv
+│   ├── sample_clientes.csv
+│   └── processed/               # base limpia y tabla de variables
 ├── docs/
-│   └── data_dictionary.md
+│   ├── data_dictionary.md       # US-03
+│   ├── churn_target_definition.md   # US-06.1
+│   └── sprint3/                 # backlog, dailies, burndown, review y retro
+├── reports/                     # calidad de datos y modelo base
 ├── src/
 │   └── finbank/
 │       ├── __init__.py
-│       └── validators.py
+│       ├── validators.py        # US-04.1
+│       ├── cleaning.py          # US-04.2
+│       ├── features.py          # US-05.1
+│       └── baseline.py          # US-05.1
 ├── tests/
-│   └── test_validators.py
+│   ├── test_validators.py
+│   ├── test_cleaning.py
+│   └── test_features_baseline.py
 └── bitacora/
     ├── pairing.md
     ├── prs.md
@@ -43,11 +54,12 @@ python -m venv .venv
 .venv\Scripts\activate      # en Windows
 pip install -r requirements.txt
 python -m pytest -v
+python run_pipeline.py
 ```
 
 ## Estado de pruebas
 
-8/8 tests pasando (ver bitacora/pruebas.md).
+24/24 tests pasando (ver bitacora/pruebas.md).
 
 ## Bitácora
 

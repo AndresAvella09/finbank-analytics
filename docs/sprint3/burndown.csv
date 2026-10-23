@@ -1,0 +1,12 @@
+dia_sprint,fecha,dia_proyecto,ideal,real,evento
+0,2026-10-12 (inicio),21,10.0,10,Sprint Planning (compromiso 10 pts)
+1,2026-10-12,21,9.0,10,TDD rojo-verde de validadores (pairing Diego-Juanse)
+2,2026-10-13,22,8.0,10,Refactor de validadores
+3,2026-10-14,23,7.0,10,Merge PR #1 #5 #6
+4,2026-10-15,24,6.0,7,US-04.1 Done (PR #4 #7 #8)
+5,2026-10-16,25,5.0,5,US-06.1 Done (PR #10)
+6,2026-10-19,26,4.0,3,US-04.2 Done (PR #11)
+7,2026-10-20,27,3.0,3,Pairing US-05.1 (pruebas en rojo)
+8,2026-10-21,28,2.0,3,Variables de morosidad en verde
+9,2026-10-22,29,1.0,0,US-05.1 Done (PR #12)
+10,2026-10-23,30,0.0,0,Sprint Review y Retrospectiva
