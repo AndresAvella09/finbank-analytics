@@ -4,7 +4,7 @@ Run from the repository root:
 
     python run_models.py
 
-Writes reports/modelos_sprint4.md.
+Writes the model reports under reports/.
 """
 
 import sys
@@ -22,6 +22,13 @@ from finbank.models import (  # noqa: E402
     split_out_of_time,
     train_churn_model,
     train_delinquency_model,
+)
+from finbank.threshold import (  # noqa: E402
+    COSTO_FN,
+    COSTO_FP,
+    MAX_ALERT_RATE,
+    best_threshold,
+    out_of_fold_scores,
 )
 
 EXTRACT = Path("data/extracto_finbank_sim.csv")
@@ -64,13 +71,41 @@ def report_sprint4(df: pd.DataFrame, mora: dict, churn: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def report_threshold(best: dict) -> str:
+    lines = [
+        "# Umbral de alerta del modelo de morosidad (US-05.3)",
+        "",
+        "Acordado con FinBank en el checkpoint de umbrales. Se elige sobre las predicciones "
+        "fuera de pliegue de las cohortes de desarrollo (1-10) y se valida fuera de tiempo en US-07.1.",
+        "",
+        "| Supuesto de negocio | Valor |",
+        "| --- | --- |",
+        f"| Costo de un falso negativo (mora no gestionada) | COP {COSTO_FN:,.0f} |",
+        f"| Costo de un falso positivo (contacto preventivo) | COP {COSTO_FP:,.0f} |",
+        f"| Capacidad del equipo de cobranza | {MAX_ALERT_RATE:.0%} de la cartera por mes |",
+        "",
+        "| Resultado | Valor |",
+        "| --- | --- |",
+        f"| Umbral de probabilidad | {best['threshold']:.2f} |",
+        f"| Tasa de alertas | {best['alert_rate']:.1%} |",
+        f"| Morosos detectados (TP / TP+FN) | {int(best['tp'])} / {int(best['tp'] + best['fn'])} |",
+        f"| Costo esperado con el modelo | COP {best['cost']:,.0f} |",
+        f"| Costo esperado sin modelo | COP {best['cost_without_model']:,.0f} |",
+        f"| Ahorro | {best['saving_pct']:.1%} |",
+    ]
+    return "\n".join(lines).replace(",", ".") + "\n"
+
+
 def main() -> int:
     df = pd.read_csv(EXTRACT)
     mora = train_delinquency_model(df)
     churn = train_churn_model(df)
     print(f"morosidad 60d: AUC CV {mora['auc_cv_mean']:.3f} | churn 3m: AUC CV {churn['auc_cv_mean']:.3f}")
+    best = best_threshold(*out_of_fold_scores(df))
+    print(f"umbral morosidad: {best['threshold']:.2f} | alertas {best['alert_rate']:.1%} | ahorro {best['saving_pct']:.1%}")
     REPORTS.mkdir(exist_ok=True)
     (REPORTS / "modelos_sprint4.md").write_text(report_sprint4(df, mora, churn), encoding="utf-8")
+    (REPORTS / "umbral_morosidad.md").write_text(report_threshold(best), encoding="utf-8")
     return 0
 
 
