@@ -11,7 +11,13 @@ Ninguna pieza de trabajo se mezcla a `main` sin revisión de un par (feature bra
 | #7 | test/validator-tests | Diego + Juanse (pairing, sesión 2) | Revisa Miguel | Pruebas TDD (ciclo rojo→verde) | Mezclado |
 | #8 | refactor/simplify-validators | Juanse | Revisa Miguel | Refactorización Simple Design | Mezclado |
 | #9 | docs/bitacora | Diego | Revisa Juanse | Bitácora técnica de prácticas XP | Mezclado |
+| #10 | docs/churn-target | Miguel | Revisado y mezclado por Juanse | Definición de la variable objetivo de churn (US-06.1) | Mezclado |
+| #11 | feature/data-cleaning | Juanse | Revisado y mezclado por Diego | Módulo de limpieza + pruebas + reporte de calidad; demo reutiliza el módulo (US-04.2) | Mezclado |
+| #12 | feature/delinquency-baseline | Diego + Juanse (pairing, sesiones 3 y 4) | Aprobado y mezclado por Miguel | Variables, modelo base de morosidad y pipeline completo (US-05.1) | Mezclado |
+| #13 | docs/sprint3-log | Diego | Aprobado y mezclado por Miguel | Backlog, dailies, burndown, review y retro del Sprint 3; bitácora | Mezclado |
 
 Nota: los PR #2 y #3 fueron abiertos por error desde la cuenta del Project Lead y cerrados de inmediato; cada autor reabrió el suyo desde su cuenta (#5 y #6) para mantener el flujo de revisión correcto.
+
+Desviación registrada (Sprint 3, día 4): el archivo `appgmac.py` (demo del Sprint Review) se subió directo a `main` desde la interfaz web, sin PR (commit `99f3e42`). Se detectó en la daily del día 5, se revisó a posteriori y su refactorización entró por el flujo normal en el PR #11. Acción acordada en la retrospectiva: proteger la rama `main` con 1 aprobación obligatoria.
 
 Regla del equipo: un PR se mezcla solo tras revisión de un integrante distinto al autor del trabajo.

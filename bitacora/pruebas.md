@@ -33,6 +33,25 @@ Tras la refactorización Simple Design (sin cambio de comportamiento), la suite 
 ============================== 8 passed in 2.57s ==============================
 ```
 
+## 4. Sprint 3 — limpieza de datos (US-04.2)
+
+Suite `tests/test_cleaning.py` (9 pruebas). Ciclo rojo el 16/10/2026: las pruebas fallan porque el módulo `finbank.cleaning` todavía no existe. Ciclo verde el 19/10/2026:
+
+```text
+============================== 17 passed ==============================
+```
+
+## 5. Sprint 3 — variables y modelo base de morosidad (US-05.1)
+
+Suite `tests/test_features_baseline.py` (7 pruebas). Ciclo rojo el 20/10/2026 y verde el 22/10/2026. Suite completa del repositorio:
+
+```text
+tests/test_cleaning.py .........                                         [ 37%]
+tests/test_features_baseline.py .......                                  [ 66%]
+tests/test_validators.py ........                                        [100%]
+============================== 24 passed ==============================
+```
+
 ## Conclusión
 
 Ninguna tarea de US-04 se dio por terminada con la suite en rojo; el reporte queda registrado en esta bitácora y el historial de commits refleja el orden red→green→refactor.
