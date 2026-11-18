@@ -126,7 +126,7 @@ elif pagina.startswith("2"):
 elif pagina.startswith("3"):
     st.title("Definition of Done")
     st.write("Una historia está *Done* cuando: (1) su checklist de 3 ítems está completo, "
-             "(2) pasó por un Pull Request revisado y aprobado, (3) las pruebas pasan sin errores y "
+             "(2) pasó por un Pull Request revisado y mezclado por un integrante distinto al autor, (3) las pruebas pasan sin errores y "
              "(4) la tarjeta está en la columna Done.")
     hist = pd.DataFrame([
         ["US-03 Requisitos de datos", "Diccionario de datos", "PR #6", "—", "✅"],
