@@ -47,11 +47,11 @@ US-04 (5 pts en el Sprint 2) y las historias de modelado se partieron en piezas 
 ## Definition of Done (sin cambios frente al Corte 2)
 
 1. Los 3 ítems del checklist de la tarjeta están marcados.
-2. Pull Request aprobado por un integrante distinto al autor.
+2. Pull Request revisado y mezclado por un integrante distinto al autor.
 3. Las pruebas pasan sin fallos (`python -m pytest`).
 4. La tarjeta está en la columna Done.
 
-| Historia | Checklist 3/3 | PR aprobado por un par | Pruebas | Done |
+| Historia | Checklist 3/3 | PR revisado y mezclado por un par | Pruebas | Done |
 | --- | --- | --- | --- | --- |
 | US-04.1 | ✔ | ✔ (#4 Juanse, #7 y #8 Miguel) | ✔ 8/8 | ✔ día 4 |
 | US-06.1 | ✔ | ✔ (#10 Juanse) | ✔ suite completa en verde | ✔ día 5 |
