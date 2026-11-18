@@ -23,6 +23,7 @@ from finbank.models import (  # noqa: E402
     train_churn_model,
     train_delinquency_model,
 )
+from finbank.validation import psi_label, validate_churn  # noqa: E402
 from finbank.threshold import (  # noqa: E402
     COSTO_FN,
     COSTO_FP,
@@ -96,6 +97,36 @@ def report_threshold(best: dict) -> str:
     return "\n".join(lines).replace(",", ".") + "\n"
 
 
+def report_churn_validation(r: dict) -> str:
+    lines = [
+        "# Validación fuera de tiempo del modelo de churn (US-07.2)",
+        "",
+        "Modelo entrenado con las cohortes 1-10 y evaluado sobre las cohortes 11-12 (preferentes activos).",
+        "",
+        "| Métrica | Valor |",
+        "| --- | --- |",
+        f"| Clientes fuera de tiempo / churn observados | {r['n_oot']} / {r['positives_oot']} |",
+        f"| AUC fuera de tiempo | {r['auc_oot']:.3f} |",
+        *[f"| AUC cohorte {c} | {a:.3f} |" for c, a in r["auc_by_cohort"].items()],
+        f"| Churn capturado en el 20 % de mayor riesgo | {r['lift_top20']['captured']:.0%} (lift {r['lift_top20']['lift']:.1f}) |",
+        f"| PSI del puntaje (desarrollo vs. fuera de tiempo) | {r['psi_score']:.3f} ({psi_label(r['psi_score'])}) |",
+        "",
+        "## Estabilidad de las variables (PSI)",
+        "",
+        "| Variable | PSI | Estado |",
+        "| --- | --- | --- |",
+        *[f"| {x.variable} | {x.psi:.3f} | {x.estado} |" for x in r["psi_features"].itertuples()],
+        "",
+        "PSI de `dias_sin_transaccion` por cohorte: "
+        + ", ".join(f"cohorte {c}: {v:.2f}" for c, v in r["psi_inactivity_by_cohort"].items()) + ".",
+        "",
+        "Lectura: el modelo discrimina bien fuera de tiempo, pero la inactividad de la cohorte 12 cambió "
+        "(impedimento I-5). Antes de desplegar se recomienda recalibrar con las cohortes recientes y "
+        "monitorear el PSI mensualmente (umbral de alerta 0,10).",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> int:
     df = pd.read_csv(EXTRACT)
     mora = train_delinquency_model(df)
@@ -103,7 +134,10 @@ def main() -> int:
     print(f"morosidad 60d: AUC CV {mora['auc_cv_mean']:.3f} | churn 3m: AUC CV {churn['auc_cv_mean']:.3f}")
     best = best_threshold(*out_of_fold_scores(df))
     print(f"umbral morosidad: {best['threshold']:.2f} | alertas {best['alert_rate']:.1%} | ahorro {best['saving_pct']:.1%}")
+    churn_val = validate_churn(df)
+    print(f"churn fuera de tiempo: AUC {churn_val['auc_oot']:.3f} | PSI inactividad {churn_val['psi_inactivity_by_cohort']}")
     REPORTS.mkdir(exist_ok=True)
+    (REPORTS / "validacion_churn.md").write_text(report_churn_validation(churn_val), encoding="utf-8")
     (REPORTS / "modelos_sprint4.md").write_text(report_sprint4(df, mora, churn), encoding="utf-8")
     (REPORTS / "umbral_morosidad.md").write_text(report_threshold(best), encoding="utf-8")
     return 0
