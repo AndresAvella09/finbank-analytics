@@ -1,4 +1,4 @@
-"""Sprint Review & Demo Operacional - FinBank (DMS Consulting) - Cortes 2 y 3."""
+"""Sprint Review & Demo Operacional - FinBank (DMS Consulting) - Cierre del proyecto."""
 import sys
 from pathlib import Path
 
@@ -15,13 +15,15 @@ DATA = ROOT / "data" / "sample_clientes.csv"
 
 # ---------- Datos del reporte de sprints ----------
 SPRINTS = pd.DataFrame(
-    {"Sprint": ["Sprint 1", "Sprint 2", "Sprint 3"], "Comprometidos": [11, 16, 10], "Completados": [8, 11, 10]}
+    {"Sprint": ["Sprint 1", "Sprint 2", "Sprint 3", "Sprint 4", "Sprint 5"], "Comprometidos": [11, 16, 10, 9, 10], "Completados": [8, 11, 10, 9, 10]}
 )
 # Burndown: puntos restantes por día hábil (según días de cierre del reporte)
 BURNDOWN = {
     "Sprint 1": {"total": 11, "cierres": {6: 3, 8: 5}},
     "Sprint 2": {"total": 16, "cierres": {6: 3, 7: 5, 9: 3}},
     "Sprint 3": {"total": 10, "cierres": {4: 3, 5: 2, 6: 2, 9: 3}},
+    "Sprint 4": {"total": 9, "cierres": {4: 3, 7: 3, 9: 3}},
+    "Sprint 5": {"total": 10, "cierres": {2: 2, 4: 2, 6: 3, 9: 3}},
 }
 
 
@@ -54,18 +56,18 @@ pagina = st.sidebar.radio(
 
 # ---------- 1. Resumen ----------
 if pagina.startswith("1"):
-    st.title("Sprint Review · Sprints 1, 2 y 3")
+    st.title("Sprint Review · Sprints 1 a 5 y cierre del proyecto")
     st.write("Incremento entregado a FinBank: diagnóstico, gobierno y Charter, tablero ágil, "
              "requisitos de datos, arquitectura y pipeline de validación de datos.")
     c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Velocity Sprint 1", "8 pts", "de 11 comprometidos")
-    c2.metric("Velocity Sprint 2", "11 pts", "de 16 comprometidos")
-    c3.metric("Velocity Sprint 3", "10 pts", "de 10 comprometidos")
-    c4.metric("Velocity promedio", "9.67 pts")
+    c1.metric("Velocity promedio", "9.6 pts", "5 Sprints")
+    c2.metric("Backlog entregado", "48 pts", "100 %")
+    c3.metric("Reserva usada", "6 de 10 días", "cierre en la semana 12")
+    c4.metric("Costo final", "$175,1M", "-$4,9M frente a $180M", delta_color="inverse")
     st.subheader("Estimado vs. real")
     st.bar_chart(SPRINTS.set_index("Sprint"))
     st.subheader("Burndown")
-    cols = st.columns(3)
+    cols = st.columns(len(BURNDOWN))
     for col, (nombre, cfg) in zip(cols, BURNDOWN.items()):
         col.caption(nombre)
         col.line_chart(burndown_df(cfg["total"], cfg["cierres"]))
@@ -137,6 +139,11 @@ elif pagina.startswith("3"):
         ["US-04.2 Limpieza", "src/finbank/cleaning.py + reporte de calidad", "PR #11", "9 pruebas (red → green)", "✅"],
         ["US-05.1 Variables y modelo base", "features.py · baseline.py · run_pipeline.py", "PR #12",
          "7 pruebas (red → green)", "✅"],
+        ["US-05.2 · US-06.2 · US-06.3 Modelos", "models.py · extracto simulado", "PR #15", "6 pruebas (red → green)", "✅"],
+        ["US-05.3 Umbral por costo", "threshold.py", "PR #16", "5 pruebas (red → green)", "✅"],
+        ["US-07.2 Validación churn", "validation.py (PSI, lift)", "PR #17", "5 pruebas (red → green)", "✅"],
+        ["US-07.1 Validación morosidad", "validation.py (AUC, KS, calibración)", "PR #18", "5 pruebas (red → green)", "✅"],
+        ["US-08 Entrega final", "scoring.py · fichas · roadmap", "PR #19", "4 pruebas (red → green)", "✅"],
     ], columns=["Historia", "Artefacto", "Pull Request", "Evidencia TDD (commits)", "DoD"])
     st.dataframe(hist, width="stretch", hide_index=True)
     st.caption("Repo: github.com/AndresAvella09/finbank-analytics")
@@ -157,6 +164,5 @@ else:
     c3.subheader("Continue")
     c3.markdown("- Tablero Kanban con checklist de 3 ítems\n- Revisión por pares antes de Done\n"
                 "- Dailies cortas\n- Etiquetas por fase del Charter")
-    st.success("Sprint 3: se comprometieron 10 puntos y se completaron 10 (100 %), con 5 puntos cerrados "
-               "en la primera semana. Sprint 4: 9–10 puntos con US-05.2 y US-06.2, sujetos a la entrega "
-               "del extracto real de FinBank.")
+    st.success("Cierre del proyecto: 5 Sprints, 48 puntos (100 % del backlog), velocidad promedio 9,6, "
+               "6 de 10 días de reserva y un costo final de $175,1M frente a $180M.")
