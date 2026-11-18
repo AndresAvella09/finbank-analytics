@@ -1,0 +1,12 @@
+dia_sprint,dia_proyecto,ideal,real,evento
+0,41,10.0,10,Sprint Planning (compromiso 10 pts) y checkpoint de umbrales con FinBank
+1,41,9.0,10,FinBank pide umbral por costo (I-4)
+2,42,8.0,8,US-05.3 Done (PR #16)
+3,43,7.0,8,PSI detecta deriva de inactividad en la cohorte 12 (I-5)
+4,44,6.0,6,US-07.2 Done (PR #17)
+5,45,5.0,6,Miguel arranca US-08 en paralelo
+6,46,4.0,3,US-07.1 Done (PR #18)
+7,47,3.0,3,Scoring y lista de alertas
+8,48,2.0,3,PR #19 esperando Approve (I-6)
+9,49,1.0,0,US-08 Done (PR #19)
+10,50,0.0,0,Sprint Review con FinBank y retrospectiva final

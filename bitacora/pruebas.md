@@ -52,6 +52,23 @@ tests/test_validators.py ........                                        [100%]
 ============================== 24 passed ==============================
 ```
 
+## 6. Sprints 4 y 5, y reserva — modelos, umbral, validación y entrega
+
+Cada historia siguió el ciclo rojo → verde: el commit `test: ... (red)` va antes que el `feat:` en cada PR.
+
+| PR | Suite nueva | Pruebas nuevas | Suite completa |
+| --- | --- | --- | --- |
+| #15 | `tests/test_models.py` | 6 | 30 passed |
+| #16 | `tests/test_threshold.py` | 5 | 35 passed |
+| #17 | `tests/test_validation_churn.py` | 5 | 40 passed |
+| #18 | `tests/test_validation_delinquency.py` | 5 | 45 passed |
+| #19 | `tests/test_scoring.py` | 4 | 49 passed |
+| #20 | `tests/test_reserve_adjustments.py` | 4 | 53 passed |
+
+```text
+============================== 53 passed ==============================
+```
+
 ## Conclusión
 
 Ninguna tarea de US-04 se dio por terminada con la suite en rojo; el reporte queda registrado en esta bitácora y el historial de commits refleja el orden red→green→refactor.

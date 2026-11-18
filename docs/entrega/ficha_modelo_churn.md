@@ -21,7 +21,7 @@
 
 ## Hallazgo de estabilidad (impedimento I-5)
 
-`dias_sin_transaccion` cambió en la cohorte 12: su PSI es 1,91, frente a 0,06 en la cohorte 11. El modelo sigue discriminando, pero el nivel de las probabilidades se desplaza. Por eso se recalibra con las cohortes recientes antes de desplegar (ver `docs/cierre/acta_cierre.md`).
+`dias_sin_transaccion` cambió en la cohorte 12: su PSI es 1,91, frente a 0,06 en la cohorte 11. La investigación hecha en la reserva de contingencia (`reports/investigacion_deriva_churn.md`) mostró que el cambio de inactividad viene con un aumento real del churn observado (16,8 %) y que el modelo lo reproduce (17,5 % predicho). Es un cambio de comportamiento y no un error de datos, así que el modelo se mantiene sin recalibrar y queda bajo monitoreo mensual, con reentrenamiento si la brecha de calibración supera 3 puntos.
 
 ## Limitaciones y uso
 

@@ -34,4 +34,16 @@ Práctica XP 01 — pairing con roles rotativos de piloto/copiloto.
 - **Desarrollo:** se rotaron los roles. La sesión se trabajó en la estación de Diego y el commit se registró con `Co-authored-by:` de Juanse.
 - **Resultado:** suite en verde (24 pruebas) y reportes `reports/calidad_datos.md` y `reports/baseline_morosidad.md`.
 
+## Sesiones de los Sprints 4 y 5, y de la reserva
+
+| Sesión | Historia | Piloto / copiloto | Resultado |
+| --- | --- | --- | --- |
+| 5 | US-05.2, US-06.2, US-06.3 (Sprint 4) | Diego / Juanse | Extracto simulado y modelos; commits co-autorados en `feature/models-sprint4` |
+| 6 | US-05.3 (Sprint 5) | Diego / Miguel | Matriz de costos acordada con FinBank y umbral 0,09 |
+| 7 | US-07.2 y US-07.1 (Sprint 5) | Juanse / Diego | PSI, KS y calibración; Juanse propuso el suavizado de Laplace para las cohortes pequeñas |
+| 8 | US-08 (Sprint 5) | Miguel / Diego | Fichas de los modelos y roadmap de despliegue desde la visión del negocio |
+| 9 | Reserva (I-5) | Diego / Juanse | Investigación de la deriva por cohorte y motivo principal de cada alerta |
+
+Todas las sesiones se trabajaron en la estación de Diego y se registraron con `Co-authored-by:` del compañero.
+
 La práctica se registra mediante commits co-autorados en el repositorio; ver bitacora/prs.md para los PR asociados.

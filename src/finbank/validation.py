@@ -138,3 +138,32 @@ def validate_delinquency(df: pd.DataFrame) -> dict:
         "recall_oot": round(conf["tp"] / max(1, conf["tp"] + conf["fn"]), 3),
         "saving_oot": round(1 - expected_cost(y_oot, p_oot, threshold) / (y_oot.sum() * COSTO_FN), 3),
     }
+
+
+def drift_investigation(df: pd.DataFrame) -> pd.DataFrame:
+    """Reserve work on impediment I-5: per-cohort stability and calibration of the churn model.
+
+    If the shifted variable also moves the observed churn, and the model's mean
+    prediction still matches it, the drift is a real behavior change the model
+    already captures (keep and monitor). If predictions and observed churn
+    diverge, the model must be recalibrated before deployment.
+    """
+    pop = churn_population(df)
+    dev, _ = split_out_of_time(pop)
+    model = train_churn_model(df)["model"]
+    base = build_churn_features(dev)["dias_sin_transaccion"]
+    rows = []
+    for c in sorted(pop["cohorte"].unique()):
+        part = pop[pop["cohorte"] == c]
+        X = build_churn_features(part)
+        rows.append({
+            "cohorte": int(c),
+            "clientes": int(len(part)),
+            "dias_sin_tx_promedio": round(float(X["dias_sin_transaccion"].mean()), 1),
+            "psi_inactividad": psi(base, X["dias_sin_transaccion"], bins=5),
+            "churn_predicho": round(float(model.predict_proba(X)[:, 1].mean()), 3),
+            "churn_observado": round(float(part["churn_3m"].mean()), 3),
+        })
+    out = pd.DataFrame(rows)
+    out["brecha_calibracion"] = (out["churn_predicho"] - out["churn_observado"]).round(3)
+    return out
