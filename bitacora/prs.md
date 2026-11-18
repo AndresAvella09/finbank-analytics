@@ -17,10 +17,10 @@ Ninguna pieza de trabajo se mezcla a `main` sin revisión de un par (feature bra
 | #13 | docs/sprint3-log | Diego | Revisado y mezclado por Miguel | Backlog, dailies, burndown, review y retro del Sprint 3; bitácora | Mezclado |
 | #15 | feature/models-sprint4 | Diego + Juanse (pairing) | Aprobado (Approve) y mezclado por Miguel | Extracto simulado, modelos de morosidad y churn (Sprint 4) | Mezclado |
 | #16 | feature/threshold-calibration | Diego + Miguel (pairing) | Aprobado (Approve) y mezclado por Juanse | Umbral por costo (US-05.3) | Mezclado |
-| #17 | feature/churn-validation | Diego + Juanse (pairing) | Aprobado (Approve) y mezclado por Miguel | Validación fuera de tiempo del churn (US-07.2) | Mezclado |
-| #18 | feature/delinquency-validation | Diego + Juanse (pairing) | Aprobado (Approve) y mezclado por Miguel | Validación fuera de tiempo de la morosidad (US-07.1) | Mezclado |
+| #17 | feature/churn-validation | Diego + Juanse (pairing) | Revisado por Miguel (comentario); entró con el #19 por el apilamiento, sin Approve propio | Validación fuera de tiempo del churn (US-07.2) | Mezclado |
+| #18 | feature/delinquency-validation | Diego + Juanse (pairing) | Revisado por Miguel (comentario); entró con el #19 por el apilamiento, sin Approve propio | Validación fuera de tiempo de la morosidad (US-07.1) | Mezclado |
 | #19 | docs/final-delivery | Diego + Miguel (pairing) | Aprobado (Approve) y mezclado por Juanse | Scoring, fichas de los modelos y roadmap (US-08) | Mezclado |
-| #20 | feature/reserve-adjustments | Diego + Juanse (pairing) | Aprobado (Approve) y mezclado por Miguel | Investigación de la deriva y ajuste del reporte de alertas (reserva) | Mezclado |
+| #20 | feature/reserve-adjustments | Diego + Juanse (pairing) | Revisado por Miguel (comentario); entró con el #21 por el apilamiento, sin Approve propio | Investigación de la deriva y ajuste del reporte de alertas (reserva) | Mezclado |
 | #21 | docs/sprint5-closure | Diego | Aprobado (Approve) y mezclado por Juanse | Documentación del Sprint 5, acta de cierre y bitácora | Mezclado |
 
 Nota: los PR #2 y #3 fueron abiertos por error desde la cuenta del Project Lead y cerrados de inmediato; cada autor reabrió el suyo desde su cuenta (#5 y #6) para mantener el flujo de revisión correcto.
@@ -29,6 +29,6 @@ Desviación registrada (Sprint 3, día 4): el archivo `appgmac.py` (demo del Spr
 
 Nota sobre el registro de revisiones (Sprint 3): en los PR #10 a #13 la revisión quedó como comentario del revisor y merge hecho por él (en ningún caso por el autor), pero sin la revisión formal "Approve" de GitHub. A partir de esta corrección, el revisor registra un Approve antes de mezclar, en línea con la acción de la retrospectiva de proteger `main` con 1 aprobación obligatoria.
 
-Desde el Sprint 4, la rama `main` está protegida en GitHub: un PR no se puede mezclar sin 1 aprobación (Approve), y la aprobación se descarta si llegan commits nuevos. Los PR del Sprint 5 están apilados (cada rama parte de la anterior) y se mezclaron en orden, del #15 al #21. Revisor siempre distinto a los autores y co-autores del PR.
+Desde el Sprint 4, la rama `main` está protegida en GitHub: un PR no se puede mezclar sin 1 aprobación (Approve), y la aprobación se descarta si llegan commits nuevos. Los PR del Sprint 5 están apilados (cada rama parte de la anterior) y debían mezclarse en orden, del #15 al #21. Se mezclaron fuera de orden: el #19 entró antes que el #17 y el #18, y el #21 antes que el #20. Como cada rama contenía las anteriores, GitHub marcó el #17, el #18 y el #20 como mezclados sin un merge propio y sin Approve (el de Miguel en el #17 se descartó al cambiar la base del PR). Miguel dejó su revisión en los tres, y su contenido llegó a `main` dentro del #19 y el #21, que sí tienen el Approve de Juanse. Lección: con PR apilados, mezclar estrictamente en orden y no usar la opción de descartar aprobaciones obsoletas. Revisor siempre distinto a los autores y co-autores del PR.
 
 Regla del equipo: un PR se mezcla solo tras revisión de un integrante distinto al autor del trabajo.

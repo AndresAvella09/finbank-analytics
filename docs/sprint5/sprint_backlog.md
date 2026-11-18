@@ -13,7 +13,7 @@
 
 ## Historias comprometidas
 
-| ID | Historia | Pts | Pairing | Revisor (Approve) | Evidencia |
+| ID | Historia | Pts | Pairing | Revisor | Evidencia |
 | --- | --- | --- | --- | --- | --- |
 | US-05.3 | Como gerente de riesgo, quiero un umbral de alerta basado en el costo de cada error y en la capacidad de cobranza, para gestionar solo lo que el equipo puede atender | 2 | Diego + Miguel | Juanse | PR #16; `reports/umbral_morosidad.md` |
 | US-07.2 | Como gerente de clientes preferentes, quiero saber si el modelo de churn funciona en meses que no vio, para confiar en la campaña de retención | 2 | Diego + Juanse | Miguel | PR #17; `reports/validacion_churn.md` |
@@ -52,6 +52,6 @@
 | Historia | Checklist 3/3 | PR aprobado y mezclado por un par | Pruebas | Done |
 | --- | --- | --- | --- | --- |
 | US-05.3 | ✔ | ✔ #16 (Juanse) | ✔ 35/35 | ✔ día 2 |
-| US-07.2 | ✔ | ✔ #17 (Miguel) | ✔ 40/40 | ✔ día 4 |
-| US-07.1 | ✔ | ✔ #18 (Miguel) | ✔ 45/45 | ✔ día 6 |
+| US-07.2 | ✔ | Parcial: #17 revisado por Miguel, entró con el #19 sin Approve propio | ✔ 40/40 | ✔ día 4 |
+| US-07.1 | ✔ | Parcial: #18 revisado por Miguel, entró con el #19 sin Approve propio | ✔ 45/45 | ✔ día 6 |
 | US-08 | ✔ | ✔ #19 (Juanse) | ✔ 49/49 | ✔ día 9 |

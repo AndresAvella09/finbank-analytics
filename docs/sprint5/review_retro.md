@@ -23,7 +23,7 @@ Velocidad promedio: **9,6 pts**. Se completaron 48 de 56 puntos comprometidos (8
 
 | Acuerdo | Resultado |
 | --- | --- |
-| Proteger `main` con 1 aprobación obligatoria | Activo desde el Sprint 4: todos los PR desde el #15 tienen Approve |
+| Proteger `main` con 1 aprobación obligatoria | Activo desde el Sprint 4. #15, #16, #19 y #21 tienen Approve; #17, #18 y #20 entraron apilados dentro del #19 y el #21 (ver `bitacora/prs.md`) |
 | Pedir los datos con un Sprint de anticipación | El extracto se pidió en el Sprint 3 y llegó el día 33, 2 días tarde, sin frenar el Sprint 4 |
 | Registrar los impedimentos externos con su fecha | I-2, I-4 e I-5 quedaron registrados con su día de detección |
 | Comprometer según la velocidad, con historias de 3 pts o menos | Sprints 4 y 5: 9 y 10 pts, historias de 2–3 pts y 100 % de cumplimiento |
