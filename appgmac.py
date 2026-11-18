@@ -1,5 +1,4 @@
 """Sprint Review & Demo Operacional - FinBank (DMS Consulting) - Corte 2, Producto C."""
-import re
 import sys
 from pathlib import Path
 
@@ -8,7 +7,8 @@ import streamlit as st
 
 ROOT = Path(__file__).parent
 sys.path.insert(0, str(ROOT / "src"))
-from finbank.validators import validate_dataset  # noqa: E402  (código real del equipo, US-04)
+from finbank.cleaning import clean_dataset  # noqa: E402  (US-04.2)
+from finbank.validators import validate_dataset  # noqa: E402  (US-04.1)
 
 st.set_page_config(page_title="FinBank · Sprint Review", page_icon="🏦", layout="wide")
 DATA = ROOT / "data" / "sample_clientes.csv"
@@ -34,43 +34,12 @@ def burndown_df(total, cierres):
 
 # ---------- Contrato de datos (docs/data_dictionary.md) ----------
 def validar(df: pd.DataFrame):
-    """Devuelve (violaciones, imputaciones) según el diccionario de datos."""
-    v, imp = [], []
-
-    def add(i, campo, regla):
-        val = df.at[i, campo]
-        v.append({"fila": i + 2, "cliente_id": df.at[i, "cliente_id"], "campo": campo,
-                  "regla": regla, "valor": "(vacío)" if pd.isna(val) else str(val)})
-
-    dup = df["cliente_id"].duplicated(keep=False)
-    for i in df.index:
-        r = df.loc[i]
-        if pd.isna(r["cliente_id"]) or not re.fullmatch(r"C-\d{4}", str(r["cliente_id"])):
-            add(i, "cliente_id", "Formato C-XXXX")
-        if dup[i]:
-            add(i, "cliente_id", "Debe ser único")
-        if pd.isna(r["edad"]):
-            add(i, "edad", "No admite nulos")
-        elif not 18 <= r["edad"] <= 75:
-            add(i, "edad", "Rango 18–75")
-        if pd.isna(r["ingreso_mensual"]):
-            add(i, "ingreso_mensual", "No admite nulos")
-        elif r["ingreso_mensual"] < 0:
-            add(i, "ingreso_mensual", "Debe ser >= 0")
-        if pd.isna(r["saldo_mora_30d"]):
-            imp.append({"fila": i + 2, "cliente_id": r["cliente_id"], "campo": "saldo_mora_30d",
-                        "acción": "Nulo imputado a 0"})
-        elif r["saldo_mora_30d"] < 0:
-            add(i, "saldo_mora_30d", "Debe ser >= 0")
-        if pd.isna(r["score_riesgo"]):
-            add(i, "score_riesgo", "No admite nulos")
-        elif not 300 <= r["score_riesgo"] <= 850:
-            add(i, "score_riesgo", "Rango 300–850")
-        if r["tipo_cliente"] not in ("preferente", "regular"):
-            add(i, "tipo_cliente", "'preferente' o 'regular'")
-        if r["activo"] not in ("si", "no"):
-            add(i, "activo", "'si' o 'no'")
-    return pd.DataFrame(v), pd.DataFrame(imp)
+    """Devuelve (violaciones, imputaciones, base limpia) usando finbank.cleaning (US-04.2)."""
+    res = clean_dataset(df)
+    viol = pd.DataFrame(res["violations"]).rename(
+        columns={"column": "campo", "rule": "regla", "value": "valor"})
+    imp = pd.DataFrame(res["imputations"]).rename(columns={"column": "campo", "action": "acción"})
+    return viol, imp, res["data"]
 
 
 # ---------- Navegación ----------
@@ -126,7 +95,7 @@ elif pagina.startswith("2"):
         st.success("Dataset íntegro: 0 inconsistencias.")
     st.caption("Debajo, el detalle por registro (qué filas fallan) según el diccionario de datos.")
 
-    viol, imp = validar(df)
+    viol, imp, limpio = validar(df)
     filas_malas = viol["cliente_id"].nunique() if len(viol) else 0
     c1, c2, c3, c4 = st.columns(4)
     c1.metric("Registros", len(df))
@@ -143,10 +112,6 @@ elif pagina.startswith("2"):
         st.subheader("Imputaciones aplicadas (política de nulos)")
         st.dataframe(imp, width="stretch", hide_index=True)
 
-    limpio = df.copy()
-    limpio["saldo_mora_30d"] = limpio["saldo_mora_30d"].fillna(0)
-    ids_malos = set(viol["cliente_id"]) if len(viol) else set()
-    limpio = limpio[~limpio["cliente_id"].isin(ids_malos)]
     st.subheader("Base limpia (sin registros inválidos)")
     st.write(f"{len(limpio)} de {len(df)} registros pasan a modelado.")
     st.download_button("Descargar CSV limpio", limpio.to_csv(index=False).encode(), "clientes_limpio.csv")
