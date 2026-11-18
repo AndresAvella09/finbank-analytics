@@ -7,15 +7,19 @@ they never saw. Stability is measured with the Population Stability Index
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import roc_auc_score
+from sklearn.metrics import brier_score_loss, roc_auc_score
 
 from finbank.models import (
     CHURN_FEATURES,
+    MOROSIDAD_FEATURES,
     build_churn_features,
+    build_delinquency_matrix,
     churn_population,
     split_out_of_time,
     train_churn_model,
+    train_delinquency_model,
 )
+from finbank.threshold import COSTO_FN, best_threshold, confusion_at, expected_cost, out_of_fold_scores
 
 PSI_STABLE = 0.10
 PSI_MAJOR = 0.25
@@ -87,4 +91,50 @@ def validate_churn(df: pd.DataFrame) -> dict:
             int(c): psi(X_dev["dias_sin_transaccion"], X_oot.loc[(oot["cohorte"] == c).to_numpy(), "dias_sin_transaccion"], bins=5)
             for c in sorted(oot["cohorte"].unique())
         },
+    }
+
+
+def ks_statistic(y, p) -> float:
+    """Kolmogorov-Smirnov: max distance between the score CDFs of positives and negatives."""
+    y = np.asarray(y).astype(bool)
+    p = np.asarray(p)
+    grid = np.unique(p)
+    cdf_pos = np.searchsorted(np.sort(p[y]), grid, side="right") / max(1, y.sum())
+    cdf_neg = np.searchsorted(np.sort(p[~y]), grid, side="right") / max(1, (~y).sum())
+    return round(float(np.max(np.abs(cdf_pos - cdf_neg))), 3)
+
+
+def calibration_table(y, p, bins: int = 5) -> pd.DataFrame:
+    """Mean predicted vs observed rate by score quantile (highest risk last)."""
+    df = pd.DataFrame({"y": np.asarray(y), "p": np.asarray(p)})
+    df["grupo"] = pd.qcut(df["p"].rank(method="first"), bins, labels=range(1, bins + 1))
+    out = df.groupby("grupo", observed=True).agg(n=("y", "size"), predicha=("p", "mean"), observada=("y", "mean"))
+    return out.round(3).reset_index()
+
+
+def validate_delinquency(df: pd.DataFrame) -> dict:
+    """US-07.1: out-of-time discrimination, calibration, stability and business cost."""
+    dev, oot = split_out_of_time(df)
+    model = train_delinquency_model(df)["model"]
+    X_dev, X_oot = build_delinquency_matrix(dev), build_delinquency_matrix(oot)
+    p_dev, p_oot = model.predict_proba(X_dev)[:, 1], model.predict_proba(X_oot)[:, 1]
+    y_oot = oot["mora_60d"].astype(int)
+    threshold = best_threshold(*out_of_fold_scores(df))["threshold"]
+    conf = confusion_at(y_oot, p_oot, threshold)
+    auc = roc_auc_score(y_oot, p_oot)
+    return {
+        "n_oot": int(len(oot)),
+        "positives_oot": int(y_oot.sum()),
+        "auc_oot": round(float(auc), 3),
+        "gini_oot": round(float(2 * auc - 1), 3),
+        "ks_oot": ks_statistic(y_oot, p_oot),
+        "brier_oot": round(float(brier_score_loss(y_oot, p_oot)), 4),
+        "auc_score_only_oot": round(float(roc_auc_score(y_oot, -oot["score_riesgo"])), 3),
+        "calibration": calibration_table(y_oot, p_oot),
+        "psi_score": psi(p_dev, p_oot),
+        "psi_features": psi_table(X_dev, X_oot, MOROSIDAD_FEATURES),
+        "threshold": threshold,
+        "confusion_oot": conf,
+        "recall_oot": round(conf["tp"] / max(1, conf["tp"] + conf["fn"]), 3),
+        "saving_oot": round(1 - expected_cost(y_oot, p_oot, threshold) / (y_oot.sum() * COSTO_FN), 3),
     }
