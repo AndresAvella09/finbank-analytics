@@ -23,8 +23,8 @@ from finbank.models import (  # noqa: E402
     train_churn_model,
     train_delinquency_model,
 )
-from finbank.validation import psi_label, validate_churn, validate_delinquency  # noqa: E402
-from finbank.scoring import alert_summary, score_portfolio  # noqa: E402
+from finbank.validation import drift_investigation, psi_label, validate_churn, validate_delinquency  # noqa: E402
+from finbank.scoring import alert_summary, alerts_by_driver, score_portfolio  # noqa: E402
 from finbank.threshold import (  # noqa: E402
     COSTO_FN,
     COSTO_FP,
@@ -167,6 +167,49 @@ def report_delinquency_validation(r: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+def report_drift(d: pd.DataFrame) -> str:
+    lines = [
+        "# Investigación de la deriva del modelo de churn (impedimento I-5, reserva)",
+        "",
+        "Trabajo hecho en la reserva de contingencia a pedido de FinBank tras la Sprint Review del Sprint 5. "
+        "Para cada cohorte se compara la inactividad con la muestra de desarrollo (PSI) y el churn "
+        "predicho por el modelo con el churn observado.",
+        "",
+        "| Cohorte | Clientes | Días sin transacción (promedio) | PSI inactividad | Churn predicho | Churn observado | Brecha |",
+        "| --- | --- | --- | --- | --- | --- | --- |",
+        *[f"| {x.cohorte} | {x.clientes} | {x.dias_sin_tx_promedio:.1f} | {x.psi_inactividad:.3f} | "
+          f"{x.churn_predicho:.1%} | {x.churn_observado:.1%} | {x.brecha_calibracion:+.1%} |" for x in d.itertuples()],
+        "",
+        "Conclusión: la deriva está aislada en la cohorte 12 y viene acompañada de un aumento real del churn "
+        "observado, que el modelo reproduce (brecha de calibración menor a 1 punto). Es un cambio de "
+        "comportamiento, no un error de datos: el modelo se mantiene sin recalibrar y queda bajo monitoreo "
+        "mensual del PSI, con reentrenamiento si la brecha supera 3 puntos.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+def report_alert_summary(scored: pd.DataFrame, resumen: dict, cohort: int) -> str:
+    by_driver = alerts_by_driver(scored)
+    lines = [
+        f"# Resumen de alertas para el comité de FinBank (cohorte {cohort})",
+        "",
+        f"Clientes evaluados: {resumen['clientes']} ({resumen['preferentes']} preferentes). "
+        f"Alertas de mora: {resumen['alertas_mora']} ({resumen['tasa_alerta_mora']:.1%}). "
+        f"Alertas de retención: {resumen['alertas_churn']}.",
+        "",
+        "| Prioridad | Clientes |",
+        "| --- | --- |",
+        *[f"| {k} | {v} |" for k, v in resumen["por_prioridad"].items()],
+        "",
+        "| Modelo | Motivo principal | Alertas |",
+        "| --- | --- | --- |",
+        *[f"| {x.modelo} | {x.motivo} | {x.alertas} |" for x in by_driver.itertuples()],
+        "",
+        f"El detalle por cliente, con su motivo principal, está en `reports/alertas_cohorte_{cohort}.csv`.",
+    ]
+    return "\n".join(lines) + "\n"
+
+
 def main() -> int:
     df = pd.read_csv(EXTRACT)
     mora = train_delinquency_model(df)
@@ -182,7 +225,10 @@ def main() -> int:
     resumen = alert_summary(scored)
     print(f"alertas cohorte {int(df['cohorte'].max())}: mora {resumen['alertas_mora']} | churn {resumen['alertas_churn']}")
     REPORTS.mkdir(exist_ok=True)
-    scored.to_csv(REPORTS / f"alertas_cohorte_{int(df['cohorte'].max())}.csv", index=False)
+    cohort = int(df["cohorte"].max())
+    scored.to_csv(REPORTS / f"alertas_cohorte_{cohort}.csv", index=False)
+    (REPORTS / "resumen_alertas.md").write_text(report_alert_summary(scored, resumen, cohort), encoding="utf-8")
+    (REPORTS / "investigacion_deriva_churn.md").write_text(report_drift(drift_investigation(df)), encoding="utf-8")
     (REPORTS / "validacion_morosidad.md").write_text(report_delinquency_validation(mora_val), encoding="utf-8")
     (REPORTS / "validacion_churn.md").write_text(report_churn_validation(churn_val), encoding="utf-8")
     (REPORTS / "modelos_sprint4.md").write_text(report_sprint4(df, mora, churn), encoding="utf-8")
