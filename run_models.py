@@ -24,6 +24,7 @@ from finbank.models import (  # noqa: E402
     train_delinquency_model,
 )
 from finbank.validation import psi_label, validate_churn, validate_delinquency  # noqa: E402
+from finbank.scoring import alert_summary, score_portfolio  # noqa: E402
 from finbank.threshold import (  # noqa: E402
     COSTO_FN,
     COSTO_FP,
@@ -177,7 +178,11 @@ def main() -> int:
     print(f"churn fuera de tiempo: AUC {churn_val['auc_oot']:.3f} | PSI inactividad {churn_val['psi_inactivity_by_cohort']}")
     mora_val = validate_delinquency(df)
     print(f"morosidad fuera de tiempo: AUC {mora_val['auc_oot']:.3f} | KS {mora_val['ks_oot']:.3f} | recall {mora_val['recall_oot']:.1%}")
+    scored = score_portfolio(df)
+    resumen = alert_summary(scored)
+    print(f"alertas cohorte {int(df['cohorte'].max())}: mora {resumen['alertas_mora']} | churn {resumen['alertas_churn']}")
     REPORTS.mkdir(exist_ok=True)
+    scored.to_csv(REPORTS / f"alertas_cohorte_{int(df['cohorte'].max())}.csv", index=False)
     (REPORTS / "validacion_morosidad.md").write_text(report_delinquency_validation(mora_val), encoding="utf-8")
     (REPORTS / "validacion_churn.md").write_text(report_churn_validation(churn_val), encoding="utf-8")
     (REPORTS / "modelos_sprint4.md").write_text(report_sprint4(df, mora, churn), encoding="utf-8")
